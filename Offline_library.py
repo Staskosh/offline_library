@@ -2,6 +2,8 @@ import os
 
 import requests
 
+import argparse
+
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
@@ -74,37 +76,42 @@ def check_filepath(filename, directory):
     return filepath
 
 
-def download_book(book_directory, number):
+def download_book(book, book_directory, number):
     url = f'http://tululu.org/txt.php?id=1{number}/'
     response = requests.get(url, allow_redirects=True)
     response.raise_for_status()
     check_for_redirect(response)
-    filename = f'{number}.{get_book_and_author_name(number)}.txt'
+    filename = f'{number}.{book}.txt'
     filepath = check_filepath(filename, book_directory)
-    # with open(filepath, 'wb') as file:
-    #     file.write(response.content)
+    with open(filepath, 'wb') as file:
+        file.write(response.content)
 
 
 def get_page(url):
     response = requests.get(url)
     response.raise_for_status()
     check_for_redirect(response)
-    return response.content
+    return response
 
 
 def main():
     load_dotenv()
-    numbers = 10
+    parser = argparse.ArgumentParser()
+    parser.add_argument("start_id", help="Please enter the first page number", type=int)
+    parser.add_argument("end_id", help="Please enter the final page number", type=int)
+    args = parser.parse_args()
+    start_id = args.start_id
+    end_id = args.end_id
     book_directory = os.getenv('BOOK_FOLDER')
     image_directory = os.getenv('IMAGE_FOLDER')
     os.makedirs(image_directory, exist_ok=True)
     os.makedirs(book_directory, exist_ok=True)
-    for number in range(numbers):
+    for number in range(start_id, end_id):
         try:
             url = f'http://tululu.org/b{number}/'
             html_content = get_page(url)
             book_info = parse_book_page(html_content)
-            download_book(book_directory, number)
+            download_book(book_info['book'], book_directory, number)
             img_link = get_img_link(number)
             download_image(img_link, image_directory)
         except requests.HTTPError as error:
