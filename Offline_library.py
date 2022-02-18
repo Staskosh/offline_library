@@ -1,13 +1,11 @@
+import argparse
 import os
+from urllib.parse import urlsplit
 
 import requests
-
-import argparse
-
-from dotenv import load_dotenv
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 from pathvalidate import sanitize_filename
-from urllib.parse import urlsplit
 
 
 def check_for_redirect(response):
@@ -33,7 +31,7 @@ def get_img_link(number):
     soup = BeautifulSoup(response.text, 'lxml')
     img_path = soup.find('td', class_='ow_px_td')\
         .find('table', class_='d_book')\
-        .find('div',class_='bookimage').find('img')['src']
+        .find('div', class_='bookimage').find('img')['src']
     img_link = 'http://tululu.org' + img_path
     return img_link
 
@@ -104,8 +102,8 @@ def main():
     end_id = args.end_id
     book_directory = os.getenv('BOOK_FOLDER')
     image_directory = os.getenv('IMAGE_FOLDER')
-    os.makedirs(image_directory, exist_ok=True)
     os.makedirs(book_directory, exist_ok=True)
+    os.makedirs(image_directory, exist_ok=True)
     for number in range(start_id, end_id):
         try:
             url = f'http://tululu.org/b{number}/'
@@ -120,5 +118,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
