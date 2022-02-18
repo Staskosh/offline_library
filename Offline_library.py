@@ -32,7 +32,6 @@ def get_img_link(number):
     img_path = soup.find('td', class_='ow_px_td')\
         .find('table', class_='d_book')\
         .find('div',class_='bookimage').find('img')['src']
-    print(img_path)
     img_link = 'http://tululu.org' + img_path
     return img_link
 
@@ -51,22 +50,22 @@ def get_genres(found_genres):
     return genres
 
 
-def get_book_and_author_name(number):
-    url = f'http://tululu.org/b{number}/'
-    response = requests.get(url)
-    response.raise_for_status()
-    check_for_redirect(response)
-    soup = BeautifulSoup(response.text, 'lxml')
+def parse_book_page(html_content):
+    soup = BeautifulSoup(html_content.text, 'lxml')
     book_info = soup.find('td', class_='ow_px_td')
     book_and_author = book_info.find('h1').text
     book = book_and_author.split('::')[0]
     author = book_and_author.split('::')[1]
     found_genres = book_info.find('span', class_='d_book').find_all('a')
     genres = get_genres(found_genres)
-    print(book, genres)
     found_comments = book_info.find_all('span', class_='black')
     comments = get_comments(found_comments)
-    return book
+
+    return {'book': book,
+            'author': author,
+            'genres': genres,
+            'comments': comments
+            }
 
 
 def check_filepath(filename, directory):
@@ -75,7 +74,8 @@ def check_filepath(filename, directory):
     return filepath
 
 
-def download_book(url, book_directory, number):
+def download_book(book_directory, number):
+    url = f'http://tululu.org/txt.php?id=1{number}/'
     response = requests.get(url, allow_redirects=True)
     response.raise_for_status()
     check_for_redirect(response)
@@ -83,6 +83,13 @@ def download_book(url, book_directory, number):
     filepath = check_filepath(filename, book_directory)
     # with open(filepath, 'wb') as file:
     #     file.write(response.content)
+
+
+def get_page(url):
+    response = requests.get(url)
+    response.raise_for_status()
+    check_for_redirect(response)
+    return response.content
 
 
 def main():
@@ -94,8 +101,10 @@ def main():
     os.makedirs(book_directory, exist_ok=True)
     for number in range(numbers):
         try:
-            url = f'http://tululu.org/txt.php?id=1{number}/'
-            download_book(url, book_directory, number)
+            url = f'http://tululu.org/b{number}/'
+            html_content = get_page(url)
+            book_info = parse_book_page(html_content)
+            download_book(book_directory, number)
             img_link = get_img_link(number)
             download_image(img_link, image_directory)
         except requests.HTTPError as error:
