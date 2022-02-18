@@ -37,21 +37,35 @@ def get_img_link(number):
     return img_link
 
 
+def get_comments(found_comments):
+    comments = []
+    for comment in found_comments:
+        comments.append(comment.text)
+    return comments
+
+
+def get_genres(found_genres):
+    genres = []
+    for genre in found_genres:
+        genres.append(genre.text)
+    return genres
+
+
 def get_book_and_author_name(number):
     url = f'http://tululu.org/b{number}/'
     response = requests.get(url)
     response.raise_for_status()
     check_for_redirect(response)
     soup = BeautifulSoup(response.text, 'lxml')
-    all_book_info = soup.find('td', class_='ow_px_td')
-    book_and_author = str(all_book_info.find('h1')).split('\xa0')
-    book = book_and_author[0].split('<h1>')[1]
-    found_comments = all_book_info.find_all('span', class_='black')
-    comments = []
-    for comment in found_comments:
-        comments.append(comment.text)
-    #author_full = book_and_author[2].split('"')[3]
-    #author = author_full.split(' -')[0]
+    book_info = soup.find('td', class_='ow_px_td')
+    book_and_author = book_info.find('h1').text
+    book = book_and_author.split('::')[0]
+    author = book_and_author.split('::')[1]
+    found_genres = book_info.find('span', class_='d_book').find_all('a')
+    genres = get_genres(found_genres)
+    print(book, genres)
+    found_comments = book_info.find_all('span', class_='black')
+    comments = get_comments(found_comments)
     return book
 
 
@@ -61,14 +75,12 @@ def check_filepath(filename, directory):
     return filepath
 
 
-def download_book(url, book_directory, image_directory, number):
+def download_book(url, book_directory, number):
     response = requests.get(url, allow_redirects=True)
     response.raise_for_status()
     check_for_redirect(response)
     filename = f'{number}.{get_book_and_author_name(number)}.txt'
     filepath = check_filepath(filename, book_directory)
-    img_link = get_img_link(number)
-    download_image(img_link, image_directory)
     # with open(filepath, 'wb') as file:
     #     file.write(response.content)
 
@@ -83,7 +95,9 @@ def main():
     for number in range(numbers):
         try:
             url = f'http://tululu.org/txt.php?id=1{number}/'
-            download_book(url, book_directory, image_directory, number)
+            download_book(url, book_directory, number)
+            img_link = get_img_link(number)
+            download_image(img_link, image_directory)
         except requests.HTTPError as error:
             print(error)
 
