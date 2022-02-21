@@ -23,16 +23,17 @@ def download_image(img_link, image_directory):
         file.write(response.content)
 
 
-def get_img_link(number):
-    url = f'http://tululu.org/b{number}/'
+def get_img_link(book_id):
+    url = f'http://tululu.org/b{book_id}/'
     response = requests.get(url)
     response.raise_for_status()
-    check_for_redirect(response)
+    #check_for_redirect(response)
     soup = BeautifulSoup(response.text, 'lxml')
     img_path = soup.find('td', class_='ow_px_td')\
         .find('table', class_='d_book')\
         .find('div', class_='bookimage').find('img')['src']
     img_link = 'http://tululu.org' + img_path
+    print(img_link)
     return img_link
 
 
@@ -74,12 +75,12 @@ def check_filepath(filename, directory):
     return filepath
 
 
-def download_book(book, book_directory, number):
-    url = f'http://tululu.org/txt.php?id=1{number}/'
+def download_book(book, book_directory, book_id):
+    url = f'http://tululu.org/txt.php?id=1{book_id}/'
     response = requests.get(url, allow_redirects=True)
     response.raise_for_status()
     check_for_redirect(response)
-    filename = f'{number}.{book}.txt'
+    filename = f'{book_id}.{book}.txt'
     filepath = check_filepath(filename, book_directory)
     with open(filepath, 'wb') as file:
         file.write(response.content)
@@ -104,13 +105,13 @@ def main():
     image_directory = os.getenv('IMAGE_FOLDER')
     os.makedirs(book_directory, exist_ok=True)
     os.makedirs(image_directory, exist_ok=True)
-    for number in range(start_id, end_id):
+    for book_id in range(start_id, end_id):
         try:
-            url = f'http://tululu.org/b{number}/'
+            url = f'http://tululu.org/b{book_id}/'
             html_content = get_page(url)
             book_info = parse_book_page(html_content)
-            download_book(book_info['book'], book_directory, number)
-            img_link = get_img_link(number)
+            download_book(book_info['book'], book_directory, book_id)
+            img_link = get_img_link(book_id)
             download_image(img_link, image_directory)
         except requests.HTTPError as error:
             print(error)
