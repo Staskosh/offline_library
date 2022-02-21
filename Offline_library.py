@@ -86,13 +86,6 @@ def download_book(book, book_directory, book_id):
         file.write(response.content)
 
 
-def get_page(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    check_for_redirect(response)
-    return response
-
-
 def main():
     load_dotenv()
     parser = argparse.ArgumentParser()
@@ -108,7 +101,9 @@ def main():
     for book_id in range(start_id, end_id):
         try:
             url = f'http://tululu.org/b{book_id}/'
-            html_content = get_page(url)
+            html_content = requests.get(url)
+            html_content.raise_for_status()
+            check_for_redirect(html_content)
             book_info = parse_book_page(html_content)
             download_book(book_info['book'], book_directory, book_id)
             img_link = get_img_link(book_id)
