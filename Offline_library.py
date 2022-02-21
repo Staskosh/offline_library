@@ -64,7 +64,7 @@ def download_book(book, book_directory, book_id):
     filename = f'{book_id}.{book}.txt'
     filepath = generate_filepath(filename, book_directory)
     with open(filepath, 'wb') as file:
-        file.write(response.content)
+        file.write(response.text)
 
 
 def main():
