@@ -36,29 +36,15 @@ def get_img_link(book_id):
     return img_link
 
 
-def get_comments(found_comments):
-    comments = []
-    for comment in found_comments:
-        comments.append(comment.text)
-    return comments
-
-
-def get_genres(found_genres):
-    genres = []
-    for genre in found_genres:
-        genres.append(genre.text)
-    return genres
-
-
 def parse_book_page(html_content):
     soup = BeautifulSoup(html_content.text, 'lxml')
     book_info = soup.find('td', class_='ow_px_td')
     book_and_author = book_info.find('h1').text
     book, author = book_and_author.split('::')
     found_genres = book_info.find('span', class_='d_book').find_all('a')
-    genres = get_genres(found_genres)
+    genres = [genre.text for genre in found_genres]
     found_comments = book_info.find_all('span', class_='black')
-    comments = get_comments(found_comments)
+    comments = [comment.text for comment in found_comments]
 
     return {'book': book,
             'author': author,
