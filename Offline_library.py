@@ -49,7 +49,7 @@ def parse_book_page(html_content):
             }
 
 
-def check_filepath(filename, directory):
+def generate_filepath(filename, directory):
     filename = sanitize_filename(filename)
     filepath = f'{directory}/{filename}'
     return filepath
@@ -61,7 +61,7 @@ def download_book(book, book_directory, book_id):
     response.raise_for_status()
     check_for_redirect(response)
     filename = f'{book_id}.{book}.txt'
-    filepath = check_filepath(filename, book_directory)
+    filepath = generate_filepath(filename, book_directory)
     with open(filepath, 'wb') as file:
         file.write(response.content)
 
