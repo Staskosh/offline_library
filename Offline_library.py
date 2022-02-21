@@ -28,7 +28,7 @@ def get_img_link(html_content):
     img_path = soup.find('td', class_='ow_px_td')\
         .find('table', class_='d_book')\
         .find('div', class_='bookimage').find('img')['src']
-    img_link = 'http://tululu.org' + img_path
+    img_link = f'http://tululu.org{img_path}'
     return img_link
 
 
