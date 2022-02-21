@@ -16,9 +16,9 @@ def check_for_redirect(response):
 def download_image(img_link, image_directory):
     response = requests.get(img_link)
     response.raise_for_status()
-    image_path = str(urlsplit(img_link).path)
-    image = image_path.split('/')[-1]
-    filepath = f'{image_directory}/{image}'
+    image_path = urlsplit(img_link).path
+    image_resolution = image_path.split('/')[-1]
+    filepath = f'{image_directory}/{image_resolution}'
     with open(filepath, 'wb') as file:
         file.write(response.content)
 
