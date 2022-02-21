@@ -23,12 +23,8 @@ def download_image(img_link, image_directory):
         file.write(response.content)
 
 
-def get_img_link(book_id):
-    url = f'http://tululu.org/b{book_id}/'
-    response = requests.get(url)
-    response.raise_for_status()
-    check_for_redirect(response)
-    soup = BeautifulSoup(response.text, 'lxml')
+def get_img_link(html_content):
+    soup = BeautifulSoup(html_content.text, 'lxml')
     img_path = soup.find('td', class_='ow_px_td')\
         .find('table', class_='d_book')\
         .find('div', class_='bookimage').find('img')['src']
@@ -90,7 +86,7 @@ def main():
             check_for_redirect(html_content)
             book_info = parse_book_page(html_content)
             download_book(book_info['book'], book_directory, book_id)
-            img_link = get_img_link(book_id)
+            img_link = get_img_link(html_content)
             download_image(img_link, image_directory)
         except requests.HTTPError as error:
             print(error)
