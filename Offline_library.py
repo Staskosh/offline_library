@@ -23,8 +23,7 @@ def download_image(img_link, image_directory):
         file.write(response.content)
 
 
-def get_img_link(html_content):
-    soup = BeautifulSoup(html_content.text, 'lxml')
+def get_img_link(soup):
     img_path = soup.find('td', class_='ow_px_td')\
         .find('table', class_='d_book')\
         .find('div', class_='bookimage').find('img')['src']
@@ -46,7 +45,7 @@ def parse_book_page(html_content):
             'author': author,
             'genres': genres,
             'comments': comments
-            }
+            }, soup
 
 
 def generate_filepath(filename, directory):
@@ -85,9 +84,9 @@ def main():
             html_content = requests.get(url)
             html_content.raise_for_status()
             check_for_redirect(html_content)
-            book_info = parse_book_page(html_content)
+            book_info, soup = parse_book_page(html_content)
             download_book(book_info['book'], book_directory, book_id)
-            img_link = get_img_link(html_content)
+            img_link = get_img_link(soup)
             download_image(img_link, image_directory)
         except requests.HTTPError as error:
             print(error)
