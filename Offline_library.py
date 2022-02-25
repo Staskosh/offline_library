@@ -56,13 +56,13 @@ def generate_filepath(filename, directory):
 
 def download_book(book, book_directory, book_id):
     url = f'http://tululu.org/txt.php'
-    payload = {'id': f'1{book_id}' }
+    payload = {'id': f'{book_id}' }
     response = requests.get(url, params=payload, allow_redirects=True)
     response.raise_for_status()
     check_for_redirect(response)
     filename = f'{book_id}.{book}.txt'
     filepath = generate_filepath(filename, book_directory)
-    with open(filepath, 'wb') as file:
+    with open(filepath, 'w') as file:
         file.write(response.text)
 
 
