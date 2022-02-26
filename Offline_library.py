@@ -58,7 +58,9 @@ def generate_filepath(filename, directory):
 
 def download_book(book, book_directory, book_id):
     url = f'http://tululu.org/txt.php'
-    payload = {'id': {book_id} }
+    payload = {'id': book_id }
+    print(payload['id'])
+    print(type(payload['id']))
     response = requests.get(url, params=payload, allow_redirects=True)
     response.raise_for_status()
     check_for_redirect(response)
