@@ -40,12 +40,14 @@ def parse_book_page(html_content):
     genres = [genre.text for genre in found_genres]
     found_comments = book_info.find_all('span', class_='black')
     comments = [comment.text for comment in found_comments]
+    img_link = get_img_link(soup)
 
     return {'book': book,
             'author': author,
             'genres': genres,
-            'comments': comments
-            }, soup
+            'comments': comments,
+            'img_link': img_link,
+            }
 
 
 def generate_filepath(filename, directory):
@@ -56,7 +58,7 @@ def generate_filepath(filename, directory):
 
 def download_book(book, book_directory, book_id):
     url = f'http://tululu.org/txt.php'
-    payload = {'id': f'{book_id}' }
+    payload = {'id': {book_id} }
     response = requests.get(url, params=payload, allow_redirects=True)
     response.raise_for_status()
     check_for_redirect(response)
@@ -84,10 +86,9 @@ def main():
             html_content = requests.get(url)
             html_content.raise_for_status()
             check_for_redirect(html_content)
-            book_info, soup = parse_book_page(html_content)
+            book_info = parse_book_page(html_content)
             download_book(book_info['book'], book_directory, book_id)
-            img_link = get_img_link(soup)
-            download_image(img_link, image_directory)
+            download_image(book_info['img_link'], image_directory)
         except requests.HTTPError as error:
             print(error)
 
