@@ -1,7 +1,6 @@
 import urllib
 from urllib.parse import urlsplit
 
-
 from bs4 import BeautifulSoup
 
 

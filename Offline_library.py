@@ -2,13 +2,13 @@ import argparse
 import codecs
 import json
 import os
-from urllib.parse import urlsplit, urlparse
+from urllib.parse import urlparse, urlsplit
 
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from pathvalidate import sanitize_filename
 from parse_tululu_category import parse_book_link
+from pathvalidate import sanitize_filename
 
 
 def check_for_redirect(response):
@@ -64,7 +64,7 @@ def generate_filepath(filename, book_directory):
 
 def download_book(book, book_directory, book_id, downloaded_books_directory):
     url = f'http://tululu.org/txt.php'
-    payload = {'id': book_id }
+    payload = {'id': book_id}
     response = requests.get(url, params=payload, allow_redirects=True)
     response.raise_for_status()
     check_for_redirect(response)
@@ -84,9 +84,11 @@ def download_json(downloaded_books_directory, book_directory, image_directory,
         book_id = urlparse(book_link).path.strip('/')[1:]
         try:
             if not skip_imgs:
-                download_image(book_info['img_link'], image_directory, downloaded_books_directory)
+                download_image(book_info['img_link'], image_directory,
+                               downloaded_books_directory)
             if not skip_txt:
-                download_book(book_info['book'], book_directory, book_id, downloaded_books_directory)
+                download_book(book_info['book'], book_directory,
+                              book_id, downloaded_books_directory)
             books_info.append(book_info)
         except requests.HTTPError as error:
             print(error)
@@ -98,12 +100,18 @@ def download_json(downloaded_books_directory, book_directory, image_directory,
 def main():
     load_dotenv()
     parser = argparse.ArgumentParser()
-    parser.add_argument("--start_page", help="Please enter the first page number", type=int)
-    parser.add_argument("--end_page", help="Please enter the final page number", type=int, default=701)
-    parser.add_argument("--dest_folder", help="Please enter the folder", type=str, default='downloaded_books')
-    parser.add_argument("--skip_imgs", help="If you don't want to download images", action='store_true')
-    parser.add_argument("--skip_txt", help="If you don't want to download books", action='store_true')
-    parser.add_argument("--json_path", help="Enter the path to json file", type=str, default='downloaded_books')
+    parser.add_argument("--start_page", help="Please enter the first page number",
+                        type=int)
+    parser.add_argument("--end_page", help="Please enter the final page number",
+                        type=int, default=701)
+    parser.add_argument("--dest_folder", help="Please enter the folder",
+                        type=str, default='downloaded_books')
+    parser.add_argument("--skip_imgs", help="If you don't want to download images",
+                        action='store_true')
+    parser.add_argument("--skip_txt", help="If you don't want to download books",
+                        action='store_true')
+    parser.add_argument("--json_path", help="Enter the path to json file",
+                        type=str, default='downloaded_books')
 
     args = parser.parse_args()
     skip_imgs = args.skip_imgs
