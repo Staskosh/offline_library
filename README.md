@@ -17,9 +17,24 @@ IMAGE_FOLDER='Тут название папки'
 ```bash
 pip install -r requirements.txt
 ```
-- Запусти скрипт указанием начальной и конечной страницы для скачивания.
+- Запусти скрипт указанием начальной страницы для скачивания. Указание конечной страница не является обязательным.
 ```bash
-python offline_library.py start_id end_id
+python offline_library.py --start_page (тут номер страницы)
+```
+- Также можно указать необязательные аргументы:
+```buildoutcfg
+python offline_library.py --start_page (тут номер страницы) --dest_folder (тут название папки куда будут скачаны все данные)
+```
+```buildoutcfg
+python offline_library.py --start_page (тут номер страницы) --json_path (тут название папки куда будет скачан файл *.json с информацией обо всех книгах)
+```
+- Если скачивание картинок не требуется, то введите аргумент:
+```bash
+python offline_library.py --start_page (тут номер страницы) --skip_imgs 
+```
+- Если скачивание книг не требуется, то введите аргумент:
+```bash
+python offline_library.py --start_page (тут номер страницы) --skip_txt 
 ```
 ## Цель проекта
 
