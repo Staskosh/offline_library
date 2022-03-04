@@ -77,6 +77,7 @@ def download_book(book, book_directory, book_id):
 def download_json(book_directory, image_directory, book_links):
     books_info = []
     for book_link in book_links:
+        print(book_link)
         html_content = requests.get(book_link)
         html_content.raise_for_status()
         book_info = parse_book_page(html_content)
@@ -95,16 +96,16 @@ def download_json(book_directory, image_directory, book_links):
 def main():
     load_dotenv()
     parser = argparse.ArgumentParser()
-    parser.add_argument("start_id", help="Please enter the first page number", type=int)
-    parser.add_argument("end_id", help="Please enter the final page number", type=int)
+    parser.add_argument("--start_page", help="Please enter the first page number", type=int)
+    parser.add_argument("--end_page", help="Please enter the final page number", type=int, default=701)
     args = parser.parse_args()
-    start_id = args.start_id
-    end_id = args.end_id
+    start_page = args.start_page
+    end_page = args.end_page
     book_directory = os.getenv('BOOK_FOLDER')
     image_directory = os.getenv('IMAGE_FOLDER')
     os.makedirs(book_directory, exist_ok=True)
     os.makedirs(image_directory, exist_ok=True)
-    for page_number in range(start_id, end_id):
+    for page_number in range(start_page, end_page):
         url = f'http://tululu.org/l55/{page_number}'
         html_content = requests.get(url)
         html_content.raise_for_status()
