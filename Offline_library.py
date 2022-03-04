@@ -1,11 +1,14 @@
 import argparse
+import codecs
+import json
 import os
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urlparse
 
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from pathvalidate import sanitize_filename
+from parse_tululu_category import parse_book_link
 
 
 def check_for_redirect(response):
@@ -35,7 +38,9 @@ def parse_book_page(html_content):
     soup = BeautifulSoup(html_content.text, 'lxml')
     book_info = soup.find('td', class_='ow_px_td')
     book_and_author = book_info.find('h1').text
-    book, author = book_and_author.split('::')
+    book_splited, author_splited = book_and_author.split('::')
+    book = book_splited.strip()
+    author = author_splited.strip()
     found_genres = book_info.find('span', class_='d_book').find_all('a')
     genres = [genre.text for genre in found_genres]
     found_comments = book_info.find_all('span', class_='black')
@@ -59,8 +64,7 @@ def generate_filepath(filename, directory):
 def download_book(book, book_directory, book_id):
     url = f'http://tululu.org/txt.php'
     payload = {'id': book_id }
-    print(payload['id'])
-    print(type(payload['id']))
+    print(book_id)
     response = requests.get(url, params=payload, allow_redirects=True)
     response.raise_for_status()
     check_for_redirect(response)
@@ -68,6 +72,20 @@ def download_book(book, book_directory, book_id):
     filepath = generate_filepath(filename, book_directory)
     with open(filepath, 'w') as file:
         file.write(response.text)
+
+
+def download_json(book_directory, image_directory, book_links):
+    books_info = {}
+    for book_link in book_links:
+        html_content = requests.get(book_link)
+        html_content.raise_for_status()
+        #check_for_redirect(html_content)
+        book_info = parse_book_page(html_content)
+        book_id = urlparse(book_link).path.strip('/')[1:]
+        download_book(book_info['book'], book_directory, book_id)
+        download_image(book_info['img_link'], image_directory)
+        books_info.update(book_info)
+    print(books_info)
 
 
 def main():
@@ -82,17 +100,31 @@ def main():
     image_directory = os.getenv('IMAGE_FOLDER')
     os.makedirs(book_directory, exist_ok=True)
     os.makedirs(image_directory, exist_ok=True)
-    for book_id in range(start_id, end_id):
-        try:
-            url = f'http://tululu.org/b{book_id}/'
-            html_content = requests.get(url)
+    for page_number in range(start_id, end_id):
+        url = f'http://tululu.org/l55/{page_number}'
+        print('page number', page_number)
+        html_content = requests.get(url)
+        html_content.raise_for_status()
+        book_links = parse_book_link(html_content)
+        print('book_links', book_links)
+        books_info = []
+        for book_link in book_links:
+            html_content = requests.get(book_link)
             html_content.raise_for_status()
-            check_for_redirect(html_content)
+            # check_for_redirect(html_content)
             book_info = parse_book_page(html_content)
-            download_book(book_info['book'], book_directory, book_id)
-            download_image(book_info['img_link'], image_directory)
-        except requests.HTTPError as error:
-            print(error)
+            book_id = urlparse(book_link).path.strip('/')[1:]
+            try:
+                download_book(book_info['book'], book_directory, book_id)
+                download_image(book_info['img_link'], image_directory)
+                books_info.append(book_info)
+            except requests.HTTPError as error:
+                print(error)
+
+        with codecs.open('all_books.json', 'w', encoding='utf8') as json_file:
+            json.dump(books_info, json_file, ensure_ascii=False)
+        print(books_info)
+
 
 
 if __name__ == '__main__':
