@@ -33,7 +33,7 @@ def get_img_link(soup):
     return img_link
 
 
-def parse_book_page(html_content):
+def get_book_info(html_content):
     soup = BeautifulSoup(html_content.text, 'lxml')
     book_and_author_selector = '.ow_px_td h1'
     book_and_author = soup.select_one(book_and_author_selector).text
@@ -72,29 +72,6 @@ def download_book(book, book_directory, book_id, downloaded_books_directory):
     filepath = generate_filepath(filename, book_directory)
     with open(f'{downloaded_books_directory}/{filepath}', 'w') as file:
         file.write(response.text)
-
-
-def download_json(downloaded_books_directory, book_directory, image_directory,
-                  book_links, skip_imgs, skip_txt, json_path):
-    books_info = []
-    for book_link in book_links:
-        html_content = requests.get(book_link)
-        html_content.raise_for_status()
-        book_info = parse_book_page(html_content)
-        book_id = urlparse(book_link).path.strip('/')[1:]
-        try:
-            if not skip_imgs:
-                download_image(book_info['img_link'], image_directory,
-                               downloaded_books_directory)
-            if not skip_txt:
-                download_book(book_info['book'], book_directory,
-                              book_id, downloaded_books_directory)
-            books_info.append(book_info)
-        except requests.HTTPError as error:
-            print(error)
-
-    with codecs.open(f'{json_path}/all_books.json', 'w', encoding='utf8') as json_file:
-        json.dump(books_info, json_file, ensure_ascii=False)
 
 
 def get_end_page():
@@ -138,9 +115,25 @@ def main():
         html_content = requests.get(url)
         html_content.raise_for_status()
         book_links = parse_book_link(html_content)
-        download_json(args.dest_folder, book_directory,
-                      image_directory, book_links, args.skip_imgs,
-                      args.skip_txt, args.json_path)
+        books_info = []
+        for book_link in book_links:
+            html_content = requests.get(book_link)
+            html_content.raise_for_status()
+            book_info = get_book_info(html_content)
+            book_id = urlparse(book_link).path.strip('/')[1:]
+            try:
+                if not args.skip_txt:
+                    download_image(book_info['img_link'], image_directory,
+                                   args.dest_folder)
+                if not args.skip_txt:
+                    download_book(book_info['book'], book_directory,
+                                  book_id, args.dest_folder)
+                books_info.append(book_info)
+            except requests.HTTPError as error:
+                print(error)
+
+        with codecs.open(f'{args.json_path}/all_books.json', 'w', encoding='utf8') as json_file:
+            json.dump(books_info, json_file, ensure_ascii=False)
 
 
 if __name__ == '__main__':
