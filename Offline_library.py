@@ -97,13 +97,26 @@ def download_json(downloaded_books_directory, book_directory, image_directory,
         json.dump(books_info, json_file, ensure_ascii=False)
 
 
+def get_end_page():
+    url = f'http://tululu.org/l55/'
+    response = requests.get(url)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, 'lxml')
+    pages_selector = '.ow_px_td .center .npage'
+    pages = soup.select(pages_selector)
+    total_pages = pages[-1].text
+
+    return total_pages
+
+
 def main():
     load_dotenv()
     parser = argparse.ArgumentParser()
     parser.add_argument("--start_page", help="Please enter the first page number",
                         type=int)
+    total_pages = get_end_page()
     parser.add_argument("--end_page", help="Please enter the final page number",
-                        type=int, default=701)
+                        type=int, default=total_pages)
     parser.add_argument("--dest_folder", help="Please enter the folder",
                         type=str, default='downloaded_books')
     parser.add_argument("--skip_imgs", help="If you don't want to download images",
