@@ -33,8 +33,8 @@ def get_img_link(soup):
     return img_link
 
 
-def get_book_info(html_content):
-    soup = BeautifulSoup(html_content.text, 'lxml')
+def get_book_info(response):
+    soup = BeautifulSoup(response.text, 'lxml')
     book_and_author_selector = '.ow_px_td h1'
     book_and_author = soup.select_one(book_and_author_selector).text
     book_splited, author_splited = book_and_author.split('::')
@@ -112,14 +112,14 @@ def main():
 
     for page_number in range(args.start_page, args.end_page,):
         url = f'http://tululu.org/l55/{page_number}'
-        html_content = requests.get(url)
-        html_content.raise_for_status()
-        book_links = parse_book_link(html_content)
+        response = requests.get(url)
+        response.raise_for_status()
+        book_links = parse_book_link(response)
         books_info = []
         for book_link in book_links:
-            html_content = requests.get(book_link)
-            html_content.raise_for_status()
-            book_info = get_book_info(html_content)
+            response = requests.get(book_link)
+            response.raise_for_status()
+            book_info = get_book_info(response)
             book_id = urlparse(book_link).path.strip('/')[1:]
             try:
                 if not args.skip_txt:
