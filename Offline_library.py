@@ -127,27 +127,20 @@ def main():
                         type=str, default='downloaded_books')
 
     args = parser.parse_args()
-    skip_imgs = args.skip_imgs
-    json_path = args.json_path
-    skip_txt = args.skip_txt
-    start_page = args.start_page
-    end_page = args.end_page
-    dest_folder = args.dest_folder
-    downloaded_books_directory = dest_folder
-
     book_directory = os.getenv('BOOK_FOLDER')
     image_directory = os.getenv('IMAGE_FOLDER')
-    os.makedirs(f'{downloaded_books_directory}/{book_directory}', exist_ok=True)
-    os.makedirs(f'{downloaded_books_directory}/{image_directory}', exist_ok=True)
-    os.makedirs(json_path, exist_ok=True)
+    os.makedirs(f'{args.dest_folder}/{book_directory}', exist_ok=True)
+    os.makedirs(f'{args.dest_folder}/{image_directory}', exist_ok=True)
+    os.makedirs(args.json_path, exist_ok=True)
 
-    for page_number in range(start_page, end_page):
+    for page_number in range(args.start_page, args.end_page,):
         url = f'http://tululu.org/l55/{page_number}'
         html_content = requests.get(url)
         html_content.raise_for_status()
         book_links = parse_book_link(html_content)
-        download_json(downloaded_books_directory, book_directory,
-                      image_directory, book_links, skip_imgs, skip_txt, json_path)
+        download_json(args.dest_folder, book_directory,
+                      image_directory, book_links, args.skip_imgs,
+                      args.skip_txt, args.json_path)
 
 
 if __name__ == '__main__':
