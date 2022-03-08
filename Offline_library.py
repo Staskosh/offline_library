@@ -7,7 +7,7 @@ from urllib.parse import urlparse, urlsplit
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from parse_tululu_category import parse_book_link
+from parse_tululu_category import get_book_links
 from pathvalidate import sanitize_filename
 
 
@@ -114,7 +114,7 @@ def main():
         url = f'http://tululu.org/l55/{page_number}'
         response = requests.get(url)
         response.raise_for_status()
-        book_links = parse_book_link(response)
+        book_links = get_book_links(response)
         books_info = []
         for book_link in book_links:
             response = requests.get(book_link)

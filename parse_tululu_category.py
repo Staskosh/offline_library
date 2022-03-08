@@ -4,7 +4,7 @@ from urllib.parse import urlsplit
 from bs4 import BeautifulSoup
 
 
-def parse_book_link(html_content):
+def get_book_links(html_content):
     soup = BeautifulSoup(html_content.text, 'lxml')
     book_paths_selector = '.ow_px_td .d_book'
     book_paths = soup.select(book_paths_selector)
