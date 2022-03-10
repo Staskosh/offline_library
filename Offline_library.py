@@ -74,6 +74,8 @@ def download_book(book, book_directory, book_id, downloaded_books_directory):
     with open(f'{downloaded_books_directory}/{filepath}', 'w') as file:
         file.write(response.text)
 
+    return filepath
+
 
 def get_end_page():
     url = f'http://tululu.org/l55/'
@@ -128,8 +130,9 @@ def main():
                                    args.dest_folder)
                     book_info['image_filepath'] = f'{args.dest_folder}/{image_filepath}'
                 if not args.skip_txt:
-                    download_book(book_info['book'], book_directory,
+                    book_filepath = download_book(book_info['book'], book_directory,
                                   book_id, args.dest_folder)
+                    book_info['book_filepath'] = f'{args.dest_folder}/{book_filepath}'
                 books_info.append(book_info)
             except requests.HTTPError as error:
                 print(error)
