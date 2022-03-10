@@ -24,6 +24,7 @@ def download_image(img_link, image_directory, downloaded_books_directory):
     filepath = f'{image_directory}/{image_resolution}'
     with open(f'{downloaded_books_directory}/{filepath}', 'wb') as file:
         file.write(response.content)
+    return filepath
 
 
 def get_img_link(soup):
@@ -123,8 +124,9 @@ def main():
             book_id = urlparse(book_link).path.strip('/')[1:]
             try:
                 if not args.skip_txt:
-                    download_image(book_info['img_link'], image_directory,
+                    image_filepath = download_image(book_info['img_link'], image_directory,
                                    args.dest_folder)
+                    book_info['image_filepath'] = f'{args.dest_folder}/{image_filepath}'
                 if not args.skip_txt:
                     download_book(book_info['book'], book_directory,
                                   book_id, args.dest_folder)
