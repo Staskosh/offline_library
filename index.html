@@ -13,13 +13,21 @@
   <body>
   <nav aria-label="Page navigation example">
       <ul class="pagination">
-          <li class="page-item"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a></li>
+          <li class="page-item {% if current_page_number == num_pages.first %} disabled {% endif %}">
+              <a class="page-link" {% if current_page_number-1 in range(num_pages) %} href="../pages/index{{current_page_number-1}}.html" tabindex="-1" aria-disabled="true"{% endif %} >Назад</a>
+          </li>
           {% for number in range(num_pages) %}
-              <li {% if number == current_page_number %} class="page-item active" aria-current="page" {% endif %}><a class="page-link" href="../pages/index{{number}}.html">{{number}}</a></li>
+          <li class="page-item {% if number == current_page_number %} active {% endif %}" aria-current="page">
+              <a class="page-link" href="../pages/index{{number}}.html">{{number}}</a>
+          </li>
           {% endfor %}
-          <li class="page-item"><a class="page-link" href="#">Next</a></li>
+          <li class="page-item {% if current_page_number == num_pages.last %} disabled {% endif %}">
+              <a class="page-link" {% if current_page_number+1 in range(num_pages) %} href="../pages/index{{current_page_number+1}}.html" tabindex="+1" aria-disabled="true"{% endif %}>Вперед</a>
+          </li>
       </ul>
   </nav>
+
+
   <div class="container">
       <div class="row">
           {% for book in books %}
