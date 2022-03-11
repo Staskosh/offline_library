@@ -1,6 +1,7 @@
 import json
 import os
 
+import requests
 from more_itertools import chunked
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -10,7 +11,7 @@ from livereload import Server
 def on_reload():
     server = Server()
     server.watch('template.html')
-    server.serve(root='.')
+    server.serve(default_filename='pages/index0.html')
 
 
 def get_books():
@@ -33,9 +34,13 @@ def main():
     list_books = [book for book in books]
     grouped_books = list(chunked((list_books), 5))
     os.makedirs('pages', exist_ok=True)
+    num_pages = len(grouped_books)
     for group_index, books in enumerate(grouped_books):
+
         rendered_page = template.render(
             books=books,
+            num_pages=num_pages,
+            current_page_number=group_index,
         )
 
         with open(f'pages/index{group_index}.html', 'w', encoding="utf8") as file:
