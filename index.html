@@ -22,7 +22,7 @@
           </li>
           {% endfor %}
           <li class="page-item {% if current_page_number == num_pages.last %} disabled {% endif %}">
-              <a class="page-link" {% if current_page_number+1 in range(num_pages) %} href="../pages/index{{current_page_number+1}}.html" tabindex="+1" aria-disabled="true"{% endif %}>Вперед</a>
+              <a class="page-link" {% if current_page_number+1 in range(num_pages) %} href="../pages/index{{current_page_number+1}}.html" tabindex="+1" aria-disabled="true" {% endif %}>Вперед</a>
           </li>
       </ul>
   </nav>
@@ -35,15 +35,22 @@
               <div class="card mb-3" style="max-width: 540px;">
                   <div class="row no-gutters">
                       <div class="col-md-4">
-                        <img src='../{{ book.image_filepath|urlencode }}' class="card-img" alt="...">
+                          <img src='../{{ book.image_filepath|urlencode }}' class="card-img" alt="...">
                       </div>
                       <div class="col-md-8">
-                        <div class="card-body">
-                          <h5 class="card-title">Название {{ book.book }}</h5>
-                          <p class="card-text">Автор {{ book.author }}</p>
-                          <a href="../{{ book.book_filepath|urlencode }}" target="_blank"> Читать </a>
-                          <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-                        </div>
+                          <div class="card-body">
+                              <h5 class="card-title">Название {{ book.book }}</h5>
+                              <p class="card-text">Автор {{ book.author }}</p>
+                              <p>
+                                  {% for genre in book.genres %}
+                                  <span class="badge badge-dark">
+                                      {{ genre }}
+                                  </span>
+                                  {% endfor %}
+                              </p>
+                              <a href="../{{ book.book_filepath|urlencode }}" target="_blank"> Читать </a>
+                              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                          </div>
                       </div>
                   </div>
               </div>
