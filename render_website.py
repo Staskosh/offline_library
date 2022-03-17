@@ -1,3 +1,4 @@
+import argparse
 import json
 import os
 
@@ -12,22 +13,24 @@ def on_reload():
     server.serve(default_filename='pages/index0.html')
 
 
-def get_books_list():
-    with open("downloaded_books/all_books.json", "r") as my_file:
+def get_books_list(json_path):
+    with open(f'{json_path}/all_books.json', 'r') as my_file:
         books = json.load(my_file)
     books_list = [book for book in books]
     return books_list
 
 
 def main():
-
     env = Environment(
         loader=FileSystemLoader('.'),
         autoescape=select_autoescape(['html', 'xml'])
     )
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--json_path", help="Enter the path to json file",
+                        type=str, default='downloaded_books')
+    args = parser.parse_args()
     template = env.get_template('index.html')
-    books_list = get_books_list()
+    books_list = get_books_list(args.json_path)
     books_by_page = 5
     grouped_books = list(chunked((books_list), books_by_page))
     os.makedirs('pages', exist_ok=True)
