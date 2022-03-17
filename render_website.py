@@ -12,11 +12,11 @@ def on_reload():
     server.serve(default_filename='pages/index0.html')
 
 
-def get_books():
+def get_books_list():
     with open("downloaded_books/all_books.json", "r") as my_file:
         books = json.load(my_file)
-
-    return books
+    books_list = [book for book in books]
+    return books_list
 
 
 def main():
@@ -27,8 +27,7 @@ def main():
     )
 
     template = env.get_template('index.html')
-    books = get_books()
-    books_list = [book for book in books]
+    books_list = get_books_list()
     books_by_page = 5
     grouped_books = list(chunked((books_list), books_by_page))
     os.makedirs('pages', exist_ok=True)
