@@ -29,7 +29,8 @@ def main():
     template = env.get_template('index.html')
     books = get_books()
     list_books = [book for book in books]
-    grouped_books = list(chunked((list_books), 5))
+    books_by_page = 5
+    grouped_books = list(chunked((list_books), books_by_page))
     os.makedirs('pages', exist_ok=True)
     num_pages = len(grouped_books)
     for group_index, books in enumerate(grouped_books):
