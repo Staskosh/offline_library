@@ -8,7 +8,7 @@ from more_itertools import chunked
 
 def on_reload():
     server = Server()
-    server.watch('template.html')
+    server.watch('index.html')
     server.serve(default_filename='pages/index0.html')
 
 
