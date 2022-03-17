@@ -40,7 +40,7 @@
                       </div>
                       <div class="col-md-8">
                           <div class="card-body">
-                              <h5 class="card-title">Название {{ book.book }}</h5>
+                              <h5 class="card-title">{{ book.book }}</h5>
                               <p class="card-text">Автор {{ book.author }}</p>
                               <p>
                                   {% for genre in book.genres %}
@@ -50,7 +50,6 @@
                                   {% endfor %}
                               </p>
                               <a href="../{{ book.book_filepath|urlencode }}" target="_blank"> Читать </a>
-                              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
                           </div>
                       </div>
                   </div>
