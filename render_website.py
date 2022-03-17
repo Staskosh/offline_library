@@ -28,16 +28,16 @@ def main():
 
     template = env.get_template('index.html')
     books = get_books()
-    list_books = [book for book in books]
+    books_list = [book for book in books]
     books_by_page = 5
-    grouped_books = list(chunked((list_books), books_by_page))
+    grouped_books = list(chunked((books_list), books_by_page))
     os.makedirs('pages', exist_ok=True)
-    num_pages = len(grouped_books)
+    page_count = len(grouped_books)
     for group_index, books in enumerate(grouped_books):
 
         rendered_page = template.render(
             books=books,
-            num_pages=num_pages,
+            num_pages=page_count,
             current_page_number=group_index,
         )
 
