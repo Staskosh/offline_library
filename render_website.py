@@ -14,9 +14,8 @@ def on_reload():
 
 def get_books():
     with open("downloaded_books/all_books.json", "r") as my_file:
-        books_json = my_file.read()
+        books = json.load(my_file)
 
-    books = json.loads(books_json)
     return books
 
 
