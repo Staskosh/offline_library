@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="../static/img/lg.png">
+      <link rel="mask-icon" href="../static/img/lg.png" color="#00а0ff">
+    <title>Бесплатная библиотека</title>
+  </head>
+  <body>
+  <nav class="mt-5 ml-5" aria-label="Page navigation example">
+      <ul class="pagination">
+          <li class="page-item {% if current_page_number == num_pages.first %} disabled {% endif %}">
+              <a class="page-link" {% if current_page_number-1 in range(num_pages) %} href="../index{{current_page_number-1}}.html" tabindex="-1" aria-disabled="true"{% endif %} >Назад</a>
+          </li>
+          {% for number in range(num_pages) %}
+          <li class="page-item {% if number == current_page_number %} active {% endif %}" aria-current="page">
+              <a class="page-link" href="../index{{number}}.html">{{number}}</a>
+          </li>
+          {% endfor %}
+          <li class="page-item {% if current_page_number == num_pages.last %} disabled {% endif %}">
+              <a class="page-link" {% if current_page_number+1 in range(num_pages) %} href="../index{{current_page_number+1}}.html" tabindex="+1" aria-disabled="true" {% endif %}>Вперед</a>
+          </li>
+      </ul>
+  </nav>
+
+
+  <div class="container">
+      <div class="row">
+          {% for book in books %}
+          <div class="col-md-6">
+              <div class="card mb-3" style="max-width: 540px;">
+                  <div class="row no-gutters">
+                      <div class="col-md-4">
+                          <img src='../{{ book.image_filepath|urlencode }}' class="card-img" alt="...">
+                      </div>
+                      <div class="col-md-8">
+                          <div class="card-body">
+                              <h5 class="card-title">Название {{ book.book }}</h5>
+                              <p class="card-text">Автор {{ book.author }}</p>
+                              <p>
+                                  {% for genre in book.genres %}
+                                  <span class="badge badge-dark">
+                                      {{ genre }}
+                                  </span>
+                                  {% endfor %}
+                              </p>
+                              <a href="../{{ book.book_filepath|urlencode }}" target="_blank"> Читать </a>
+                              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          {% endfor %}
+      </div>
+  </div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="../static/js/slim.min.js"></script>
+    <script src="../static/js/popper.min.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+  </body>
+</html>
