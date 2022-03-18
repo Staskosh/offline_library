@@ -6,7 +6,7 @@
 ## Demo
 Для использования сайта онлайн воспользуйтесь [репозиторием](https://github.com/Staskosh/offline_library_deploy/)
 
-Посмотреть демо [БОЛЬШАЯ БЕСПЛАТНАЯ БИБЛИОТЕКА](https://staskosh.github.io/offline_library_deploy/)
+Посмотреть демо [БОЛЬШАЯ БЕСПЛАТНАЯ БИБЛИОТЕКА](https://staskosh.github.io/offline_library_deploy/pages/index1.html)
 
 ## Как установить
 

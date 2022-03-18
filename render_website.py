@@ -36,14 +36,14 @@ def main():
     os.makedirs('pages', exist_ok=True)
     page_count = len(grouped_books)
     for group_index, books in enumerate(grouped_books):
-
+        current_page_number = group_index + 1
         rendered_page = template.render(
             books=books,
-            num_pages=page_count,
-            current_page_number=group_index,
+            num_pages=page_count+1,
+            current_page_number=current_page_number,
         )
 
-        with open(f'pages/index{group_index}.html', 'w', encoding="utf8") as file:
+        with open(f'pages/index{current_page_number}.html', 'w', encoding="utf8") as file:
             file.write(rendered_page)
 
     on_reload()
