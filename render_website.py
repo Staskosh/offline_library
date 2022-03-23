@@ -10,7 +10,7 @@ from more_itertools import chunked
 def on_reload():
     server = Server()
     server.watch('index.html')
-    server.serve(default_filename='pages/index0.html')
+    server.serve(default_filename='pages/index1.html')
 
 
 def get_books_list(json_path):
