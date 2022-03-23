@@ -13,11 +13,10 @@ def on_reload():
     server.serve(default_filename='pages/index1.html')
 
 
-def get_books_list(json_path):
+def get_books(json_path):
     with open(f'{json_path}/all_books.json', 'r') as my_file:
         books = json.load(my_file)
-    books_list = [book for book in books]
-    return books_list
+    return books
 
 
 def main():
@@ -30,13 +29,12 @@ def main():
                         type=str, default='downloaded_books')
     args = parser.parse_args()
     template = env.get_template('index.html')
-    books_list = get_books_list(args.json_path)
+    books = get_books(args.json_path)
     books_by_page = 5
-    grouped_books = list(chunked((books_list), books_by_page))
+    grouped_books = list(chunked((books), books_by_page))
     os.makedirs('pages', exist_ok=True)
     page_count = len(grouped_books)
     for current_page_number, books in enumerate(grouped_books, start=1):
-        print(current_page_number)
         rendered_page = template.render(
             books=books,
             num_pages=page_count,
