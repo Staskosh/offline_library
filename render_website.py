@@ -35,11 +35,11 @@ def main():
     grouped_books = list(chunked((books_list), books_by_page))
     os.makedirs('pages', exist_ok=True)
     page_count = len(grouped_books)
-    for group_index, books in enumerate(grouped_books):
-        current_page_number = group_index + 1
+    for current_page_number, books in enumerate(grouped_books, start=1):
+        print(current_page_number)
         rendered_page = template.render(
             books=books,
-            num_pages=page_count+1,
+            num_pages=page_count,
             current_page_number=current_page_number,
         )
 
