@@ -7,19 +7,13 @@ from livereload import Server
 from more_itertools import chunked
 
 
-def on_reload():
-    server = Server()
-    server.watch('index.html')
-    server.serve(default_filename='pages/index1.html')
-
-
 def get_books(json_path):
     with open(f'{json_path}/all_books.json', 'r') as my_file:
         books = json.load(my_file)
     return books
 
 
-def main():
+def render_pages():
     env = Environment(
         loader=FileSystemLoader('.'),
         autoescape=select_autoescape(['html', 'xml'])
@@ -43,6 +37,25 @@ def main():
 
         with open(f'pages/index{current_page_number}.html', 'w', encoding="utf8") as file:
             file.write(rendered_page)
+
+
+def rebuild():
+    render_pages()
+    print("Site rebuilt")
+
+
+def on_reload():
+    rebuild()
+
+    server = Server()
+
+    server.watch('index.html', rebuild)
+
+    server.serve(root='.')
+
+
+def main():
+    render_pages()
 
     on_reload()
 
