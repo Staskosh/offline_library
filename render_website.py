@@ -39,25 +39,10 @@ def render_pages():
             file.write(rendered_page)
 
 
-def rebuild():
-    render_pages()
-    print("Site rebuilt")
-
-
-def on_reload():
-    rebuild()
-
-    server = Server()
-
-    server.watch('index.html', rebuild)
-
-    server.serve(root='.')
-
-
 def main():
-    render_pages()
-
-    on_reload()
+    server = Server()
+    server.watch('index.html', render_pages)
+    server.serve(root='.')
 
 
 if __name__ == '__main__':
